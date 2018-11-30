@@ -14,7 +14,7 @@
 #
 # During the first start, default configurations are created for all peers.
 
-version: '1'
+version: '3.4'
 
 # Cluster secret can be generated with the following commands:
 # od  -vN 32 -An -tx1 /dev/urandom | tr -d ' \n'
@@ -44,8 +44,8 @@ services:
       - ./compose/ipfs1:/data/ipfs
 
   computingProvider1:
-    container_name: distributed-ai-computingProvider1
-    image: distributed-ai-computingProvider
+    container_name: distributed-ai-computingprovider1
+    image: distributed-ai-computingprovider
     depends_on:
       - start_dependencies
     build:
@@ -53,7 +53,7 @@ services:
       dockerfile: Dockerfile
     command: go run main.go
     volumes:
-      - ./compose/computingProvider1:/data/computingProvider
+      - ./compose/computingprovider1:/data/computingprovider
     environment:
       IPFS_HOST: ipfs1
     ports:
@@ -87,8 +87,8 @@ services:
       - ./compose/ipfs2:/data/ipfs
 
   computingProvider2:
-    container_name: distributed-ai-computingProvider2
-    image: distributed-ai-computingProvider
+    container_name: distributed-ai-computingprovider2
+    image: distributed-ai-computingprovider
     depends_on:
       - start_dependencies
     build:
@@ -96,7 +96,7 @@ services:
       dockerfile: Dockerfile
     command: go run main.go
     volumes:
-      - ./compose/computingProvider2:/data/computingProvider
+      - ./compose/computingprovider2:/data/computingprovider
     environment:
       IPFS_HOST: ipfs2
     ports:
