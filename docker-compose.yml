@@ -45,7 +45,7 @@ services:
 
   computingProvider1:
     container_name: distributed-ai-computingProvider1
-    image: distributed-ai-common
+    image: distributed-ai-computingProvider
     depends_on:
       - start_dependencies
     build:
@@ -53,7 +53,7 @@ services:
       dockerfile: Dockerfile
     command: go run main.go
     volumes:
-      - ./compose/common1:/data/common
+      - ./compose/computingProvider1:/data/computingProvider
     environment:
       IPFS_HOST: ipfs1
     ports:
@@ -88,7 +88,7 @@ services:
 
   computingProvider2:
     container_name: distributed-ai-computingProvider2
-    image: distributed-ai-common
+    image: distributed-ai-computingProvider
     depends_on:
       - start_dependencies
     build:
@@ -96,7 +96,7 @@ services:
       dockerfile: Dockerfile
     command: go run main.go
     volumes:
-      - ./compose/common2:/data/common
+      - ./compose/computingProvider2:/data/computingProvider
     environment:
       IPFS_HOST: ipfs2
     ports:
