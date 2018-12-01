@@ -16,69 +16,23 @@ import (
 	"net/http"
 )
 
-// AddStorageContext provides the Storage add action context.
-type AddStorageContext struct {
-	context.Context
-	*goa.ResponseData
-	*goa.RequestData
-	Payload *FilePayload
-}
-
-// NewAddStorageContext parses the incoming request URL and body, performs validations and creates the
-// context used by the Storage controller add action.
-func NewAddStorageContext(ctx context.Context, r *http.Request, service *goa.Service) (*AddStorageContext, error) {
-	var err error
-	resp := goa.ContextResponse(ctx)
-	resp.Service = service
-	req := goa.ContextRequest(ctx)
-	req.Request = r
-	rctx := AddStorageContext{Context: ctx, ResponseData: resp, RequestData: req}
-	return &rctx, err
-}
-
-// OK sends a HTTP response with status code 200.
-func (ctx *AddStorageContext) OK(resp []byte) error {
-	if ctx.ResponseData.Header().Get("Content-Type") == "" {
-		ctx.ResponseData.Header().Set("Content-Type", "text/plain")
-	}
-	ctx.ResponseData.WriteHeader(200)
-	_, err := ctx.ResponseData.Write(resp)
-	return err
-}
-
-// BadRequest sends a HTTP response with status code 400.
-func (ctx *AddStorageContext) BadRequest(r error) error {
-	if ctx.ResponseData.Header().Get("Content-Type") == "" {
-		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	}
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
-}
-
-// InternalServerError sends a HTTP response with status code 500.
-func (ctx *AddStorageContext) InternalServerError(r error) error {
-	if ctx.ResponseData.Header().Get("Content-Type") == "" {
-		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	}
-	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
-}
-
-// CatStorageContext provides the Storage cat action context.
-type CatStorageContext struct {
+// CatComputingInfoContext provides the ComputingInfo cat action context.
+type CatComputingInfoContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Address string
 }
 
-// NewCatStorageContext parses the incoming request URL and body, performs validations and creates the
-// context used by the Storage controller cat action.
-func NewCatStorageContext(ctx context.Context, r *http.Request, service *goa.Service) (*CatStorageContext, error) {
+// NewCatComputingInfoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the ComputingInfo controller cat action.
+func NewCatComputingInfoContext(ctx context.Context, r *http.Request, service *goa.Service) (*CatComputingInfoContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CatStorageContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CatComputingInfoContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramAddress := req.Params["address"]
 	if len(paramAddress) > 0 {
 		rawAddress := paramAddress[0]
@@ -88,7 +42,7 @@ func NewCatStorageContext(ctx context.Context, r *http.Request, service *goa.Ser
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *CatStorageContext) OK(resp []byte) error {
+func (ctx *CatComputingInfoContext) OK(resp []byte) error {
 	if ctx.ResponseData.Header().Get("Content-Type") == "" {
 		ctx.ResponseData.Header().Set("Content-Type", "plain/text")
 	}
@@ -98,7 +52,53 @@ func (ctx *CatStorageContext) OK(resp []byte) error {
 }
 
 // InternalServerError sends a HTTP response with status code 500.
-func (ctx *CatStorageContext) InternalServerError(r error) error {
+func (ctx *CatComputingInfoContext) InternalServerError(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// UploadComputingInfoContext provides the ComputingInfo upload action context.
+type UploadComputingInfoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *FilePayload
+}
+
+// NewUploadComputingInfoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the ComputingInfo controller upload action.
+func NewUploadComputingInfoContext(ctx context.Context, r *http.Request, service *goa.Service) (*UploadComputingInfoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := UploadComputingInfoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *UploadComputingInfoContext) OK(resp []byte) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	}
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *UploadComputingInfoContext) BadRequest(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *UploadComputingInfoContext) InternalServerError(r error) error {
 	if ctx.ResponseData.Header().Get("Content-Type") == "" {
 		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	// Create servicea
+	// Create service
 	service := goa.New("computingProvider service APIs")
 
 	// Mount middleware
@@ -18,9 +18,9 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// Mount "Storage" controller
-	c := NewStorageController(service)
-	app.MountStorageController(service, c)
+	// Mount "ComputingInfo" controller
+	c := NewComputingInfoController(service)
+	app.MountComputingInfoController(service, c)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)
 	app.MountSwaggerController(service, c2)

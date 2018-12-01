@@ -32,15 +32,15 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
-// StorageController is the controller interface for the Storage actions.
-type StorageController interface {
+// ComputingInfoController is the controller interface for the ComputingInfo actions.
+type ComputingInfoController interface {
 	goa.Muxer
-	Add(*AddStorageContext) error
-	Cat(*CatStorageContext) error
+	Cat(*CatComputingInfoContext) error
+	Upload(*UploadComputingInfoContext) error
 }
 
-// MountStorageController "mounts" a Storage resource controller on the given service.
-func MountStorageController(service *goa.Service, ctrl StorageController) {
+// MountComputingInfoController "mounts" a ComputingInfo resource controller on the given service.
+func MountComputingInfoController(service *goa.Service, ctrl ComputingInfoController) {
 	initService(service)
 	var h goa.Handler
 
@@ -50,7 +50,22 @@ func MountStorageController(service *goa.Service, ctrl StorageController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewAddStorageContext(ctx, req, service)
+		rctx, err := NewCatComputingInfoContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Cat(rctx)
+	}
+	service.Mux.Handle("GET", "/api/v0/computinginfo/:address", ctrl.MuxHandler("cat", h, nil))
+	service.LogInfo("mount", "ctrl", "ComputingInfo", "action", "Cat", "route", "GET /api/v0/computinginfo/:address")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewUploadComputingInfoContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
@@ -60,29 +75,14 @@ func MountStorageController(service *goa.Service, ctrl StorageController) {
 		} else {
 			return goa.MissingPayloadError()
 		}
-		return ctrl.Add(rctx)
+		return ctrl.Upload(rctx)
 	}
-	service.Mux.Handle("POST", "/api/v0/storage", ctrl.MuxHandler("add", h, unmarshalAddStoragePayload))
-	service.LogInfo("mount", "ctrl", "Storage", "action", "Add", "route", "POST /api/v0/storage")
-
-	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		// Check if there was an error loading the request
-		if err := goa.ContextError(ctx); err != nil {
-			return err
-		}
-		// Build the context
-		rctx, err := NewCatStorageContext(ctx, req, service)
-		if err != nil {
-			return err
-		}
-		return ctrl.Cat(rctx)
-	}
-	service.Mux.Handle("GET", "/api/v0/storage/:address", ctrl.MuxHandler("cat", h, nil))
-	service.LogInfo("mount", "ctrl", "Storage", "action", "Cat", "route", "GET /api/v0/storage/:address")
+	service.Mux.Handle("POST", "/api/v0/computinginfo", ctrl.MuxHandler("upload", h, unmarshalUploadComputingInfoPayload))
+	service.LogInfo("mount", "ctrl", "ComputingInfo", "action", "Upload", "route", "POST /api/v0/computinginfo")
 }
 
-// unmarshalAddStoragePayload unmarshals the request body into the context request data Payload field.
-func unmarshalAddStoragePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+// unmarshalUploadComputingInfoPayload unmarshals the request body into the context request data Payload field.
+func unmarshalUploadComputingInfoPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
 	var err error
 	var payload filePayload
 	_, rawFile, err2 := req.FormFile("file")
