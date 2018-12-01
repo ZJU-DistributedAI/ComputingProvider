@@ -12,6 +12,7 @@ import (
 	"os"
 	"github.com/ZJU-DistributedAI/ComputingProvider/transaction"
 	"math/big"
+	"encoding/json"
 )
 var IPFS_HOST = os.Getenv("IPFS_HOST")
 // ComputingInfoController implements the ComputingInfo resource.
@@ -91,7 +92,21 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 
 	// get hash to signature offline, then send raw transaction to ethereum
 	//TODO(responseBody content)
-	var hash = string(responseBody)
+	//var hash = string(responseBody)
+
+	//结构化存储 Api 返回的 JSON 数据，注意字段首字母必须大写
+	type ResponseStruct struct {
+		Name          string `json:"name"`
+		Hash       	  string `json:"card_balance"`
+	}
+	var responseStruct ResponseStruct
+	err = json.Unmarshal(responseBody, &responseStruct) //json = > struct
+
+	if err != nil {
+		return ctx.BadRequest(
+			goa.ErrBadRequest("json parse failure"))
+	}
+	hash := responseStruct.Hash
 
 	if len(hash) != 46 {
 		return ctx.BadRequest(
@@ -99,22 +114,22 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 	}
 
 	// key文件数据； 账户密码； key文件数据路径； 账户； 带转入账户
-	var KEYJSON_FILEDIR   = `./UTC--2018-11-15T13-17-11.427354517Z--9893e46b95e70035cf11c103d5ca425166b0532b`
-	var SIGN_PASSPHRASE   = `123456`
-	var KEYSTORE_DIR      = `.`
-	var COINBASE_ADDR_HEX = `0x9893e46b95e70035cf11c103d5ca425166b0532b`
-	var ALTER_ADDR_HEX    = `0xa0c34337a7b0ab1de7462899cb037d3588d1db92`
+	var keyjson_filedir   = `./UTC--2018-11-15T13-17-11.427354517Z--9893e46b95e70035cf11c103d5ca425166b0532b`
+	var sign_passphrase   = `123456`
+	var keystore_dir      = `.`
+	var from = `0x9893e46b95e70035cf11c103d5ca425166b0532b`
+	var to    = `0xa0c34337a7b0ab1de7462899cb037d3588d1db92`
 	amount := big.NewInt(0)
 	gasPrice := big.NewInt(2000000000)
 	gasLimit := uint64(2711301)
 	data := "add " + hash
 
 	returnHash, err := transaction.SendTransaction(
-		KEYJSON_FILEDIR,
-		SIGN_PASSPHRASE,
-		KEYSTORE_DIR,
-		COINBASE_ADDR_HEX,
-		ALTER_ADDR_HEX,
+		keyjson_filedir,
+		sign_passphrase,
+		keystore_dir,
+		from,
+		to,
 		amount,
 		gasLimit,
 		gasPrice,
@@ -128,8 +143,4 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 
 	return ctx.OK([]byte(responseBody))
 	// ComputingInfoController_Upload: end_implement
-}
-
-func setTransactionInfo()  {
-	
 }
