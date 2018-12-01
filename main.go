@@ -1,8 +1,8 @@
 //go:generate goagen bootstrap -d github.com/ZJU-DistributedAI/ComputingProvider/design
 //go:generate goagen -d github.com/ZJU-DistributedAI/ComputingProvider/design swagger -o public
 //go:generate goagen -d github.com/ZJU-DistributedAI/ComputingProvider/design schema -o public
-
 //go:generate go-bindata -ignore 'bindata.go' -pkg swagger -o public/swagger/bindata.go ./public/swagger/...
+
 //go:generate echo Start copying the swagger-ui dist resources
 //go:generate cp -a swagger-ui-dist/. public/swagger
 //go:generate echo Finished copying the swagger-ui dist resources
