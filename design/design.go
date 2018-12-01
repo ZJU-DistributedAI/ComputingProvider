@@ -47,11 +47,25 @@ var FilePayload = Type("FilePayload", func() {
 	Required("file")
 })
 
-var _ = Resource("Public", func() {
-	// CORS policy that applies to all actions and file servers of "public" resource
+//var _ = Resource("Public", func() {
+//	// CORS policy that applies to all actions and file servers of "public" resource
+//	Origin("*", func() {
+//		Methods("GET")
+//	})
+//	Files("/schema/*filepath", "public/schema/")
+//	Files("/swagger/*filepath", "public/swagger/")
+//})
+
+//这里，添加josn和swagger－ui的资源导出
+var _ = Resource("swagger", func() {
 	Origin("*", func() {
-		Methods("GET")
+		Methods("GET") // Allow all origins to retrieve the Swagger JSON (CORS)
 	})
-	Files("/schema/*filepath", "public/schema/")
-	Files("/swagger/*filepath", "public/swagger/")
+	Files("/swagger.json", "swagger/swagger.json")
+})
+
+var _ = Resource("swagger-ui-dist", func() {
+
+	//建立静态httpserver
+	Files("/swagger-ui-dist/*filepath", "swagger-ui-dist/")
 })

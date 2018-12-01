@@ -32,64 +32,6 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
-// PublicController is the controller interface for the Public actions.
-type PublicController interface {
-	goa.Muxer
-	goa.FileServer
-}
-
-// MountPublicController "mounts" a Public resource controller on the given service.
-func MountPublicController(service *goa.Service, ctrl PublicController) {
-	initService(service)
-	var h goa.Handler
-	service.Mux.Handle("OPTIONS", "/schema/*filepath", ctrl.MuxHandler("preflight", handlePublicOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/swagger/*filepath", ctrl.MuxHandler("preflight", handlePublicOrigin(cors.HandlePreflight()), nil))
-
-	h = ctrl.FileHandler("/schema/*filepath", "public/schema/")
-	h = handlePublicOrigin(h)
-	service.Mux.Handle("GET", "/schema/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Public", "files", "public/schema/", "route", "GET /schema/*filepath")
-
-	h = ctrl.FileHandler("/swagger/*filepath", "public/swagger/")
-	h = handlePublicOrigin(h)
-	service.Mux.Handle("GET", "/swagger/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Public", "files", "public/swagger/", "route", "GET /swagger/*filepath")
-
-	h = ctrl.FileHandler("/schema/", "public/schema/index.html")
-	h = handlePublicOrigin(h)
-	service.Mux.Handle("GET", "/schema/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Public", "files", "public/schema/index.html", "route", "GET /schema/")
-
-	h = ctrl.FileHandler("/swagger/", "public/swagger/index.html")
-	h = handlePublicOrigin(h)
-	service.Mux.Handle("GET", "/swagger/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Public", "files", "public/swagger/index.html", "route", "GET /swagger/")
-}
-
-// handlePublicOrigin applies the CORS response headers corresponding to the origin.
-func handlePublicOrigin(h goa.Handler) goa.Handler {
-
-	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		origin := req.Header.Get("Origin")
-		if origin == "" {
-			// Not a CORS request
-			return h(ctx, rw, req)
-		}
-		if cors.MatchOrigin(origin, "*") {
-			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", origin)
-			rw.Header().Set("Access-Control-Allow-Credentials", "false")
-			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
-				// We are handling a preflight request
-				rw.Header().Set("Access-Control-Allow-Methods", "GET")
-			}
-			return h(ctx, rw, req)
-		}
-
-		return h(ctx, rw, req)
-	}
-}
-
 // StorageController is the controller interface for the Storage actions.
 type StorageController interface {
 	goa.Muxer
@@ -159,4 +101,66 @@ func unmarshalAddStoragePayload(ctx context.Context, service *goa.Service, req *
 	}
 	goa.ContextRequest(ctx).Payload = payload.Publicize()
 	return nil
+}
+
+// SwaggerController is the controller interface for the Swagger actions.
+type SwaggerController interface {
+	goa.Muxer
+	goa.FileServer
+}
+
+// MountSwaggerController "mounts" a Swagger resource controller on the given service.
+func MountSwaggerController(service *goa.Service, ctrl SwaggerController) {
+	initService(service)
+	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/swagger.json", ctrl.MuxHandler("preflight", handleSwaggerOrigin(cors.HandlePreflight()), nil))
+
+	h = ctrl.FileHandler("/swagger.json", "swagger/swagger.json")
+	h = handleSwaggerOrigin(h)
+	service.Mux.Handle("GET", "/swagger.json", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger/swagger.json", "route", "GET /swagger.json")
+}
+
+// handleSwaggerOrigin applies the CORS response headers corresponding to the origin.
+func handleSwaggerOrigin(h goa.Handler) goa.Handler {
+
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "*") {
+			ctx = goa.WithLogContext(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", origin)
+			rw.Header().Set("Access-Control-Allow-Credentials", "false")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET")
+			}
+			return h(ctx, rw, req)
+		}
+
+		return h(ctx, rw, req)
+	}
+}
+
+// SwaggerUIDistController is the controller interface for the SwaggerUIDist actions.
+type SwaggerUIDistController interface {
+	goa.Muxer
+	goa.FileServer
+}
+
+// MountSwaggerUIDistController "mounts" a SwaggerUIDist resource controller on the given service.
+func MountSwaggerUIDistController(service *goa.Service, ctrl SwaggerUIDistController) {
+	initService(service)
+	var h goa.Handler
+
+	h = ctrl.FileHandler("/swagger-ui-dist/*filepath", "swagger-ui-dist/")
+	service.Mux.Handle("GET", "/swagger-ui-dist/*filepath", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "SwaggerUIDist", "files", "swagger-ui-dist/", "route", "GET /swagger-ui-dist/*filepath")
+
+	h = ctrl.FileHandler("/swagger-ui-dist/", "swagger-ui-dist/index.html")
+	service.Mux.Handle("GET", "/swagger-ui-dist/", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "SwaggerUIDist", "files", "swagger-ui-dist/index.html", "route", "GET /swagger-ui-dist/")
 }

@@ -7,8 +7,8 @@
 # compose/
 # |-- cluster1
 # |-- cluster2
-# |-- common1
-# |-- common2
+# |-- computingprovider1
+# |-- computingprovider2
 # |-- ipfs1
 # |-- ipfs2
 #

@@ -1,11 +1,4 @@
 //go:generate goagen bootstrap -d github.com/ZJU-DistributedAI/ComputingProvider/design
-//go:generate goagen -d github.com/ZJU-DistributedAI/ComputingProvider/design swagger -o public
-//go:generate goagen -d github.com/ZJU-DistributedAI/ComputingProvider/design schema -o public
-//go:generate go-bindata -ignore 'bindata.go' -pkg swagger -o public/swagger/bindata.go ./public/swagger/...
-
-//go:generate echo Start copying the swagger-ui dist resources
-//go:generate cp -a swagger-ui-dist/. public/swagger
-//go:generate echo Finished copying the swagger-ui dist resources
 
 package main
 
@@ -16,7 +9,7 @@ import (
 )
 
 func main() {
-	// Create service
+	// Create servicea
 	service := goa.New("computingProvider service APIs")
 
 	// Mount middleware
@@ -25,12 +18,15 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// Mount "Public" controller
-	c := NewPublicController(service)
-	app.MountPublicController(service, c)
 	// Mount "Storage" controller
-	c2 := NewStorageController(service)
-	app.MountStorageController(service, c2)
+	c := NewStorageController(service)
+	app.MountStorageController(service, c)
+	// Mount "swagger" controller
+	c2 := NewSwaggerController(service)
+	app.MountSwaggerController(service, c2)
+	// Mount "swagger-ui-dist" controller
+	c3 := NewSwaggerUIDistController(service)
+	app.MountSwaggerUIDistController(service, c3)
 
 	// Start service
 	if err := service.ListenAndServe(":3001"); err != nil {
