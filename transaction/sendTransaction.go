@@ -26,14 +26,14 @@ func SendTransaction(
 	gasPirce *big.Int,
 	data string) (string ,error) {
 
-	// 初始化keystore 用户数据  KEYSTORE_DIR   秘钥
+	// 初始化keystore
 	ks := keystore.NewKeyStore(
 		KEYSTORE_DIR,
 		keystore.LightScryptN,
 		keystore.LightScryptP)
 	fmt.Println(ks)
 
-	// 创建账户 COINBASE_ADDR_HEX 特别注意，这里的address就是你要查询的以太坊余额的地址。一般是0xddddd 这样的形式
+	// 创建账户 COINBASE_ADDR_HEX
 	fromAccDef := accounts.Account{
 		Address: common.HexToAddress(COINBASE_ADDR_HEX),
 	}
@@ -61,7 +61,6 @@ func SendTransaction(
 	fmt.Println()
 
 	// 建立交易
-	//TODO()
 	tx := types.NewTransaction(
 		0x0,
 		toAccDef.Address,

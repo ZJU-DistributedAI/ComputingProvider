@@ -91,10 +91,6 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 	}
 
 	// get hash to signature offline, then send raw transaction to ethereum
-	//TODO(responseBody content)
-	//var hash = string(responseBody)
-
-	//结构化存储 Api 返回的 JSON 数据，注意字段首字母必须大写
 	type ResponseStruct struct {
 		Name          string `json:"name"`
 		Hash       	  string `json:"card_balance"`
@@ -118,7 +114,7 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 	var sign_passphrase   = `123456`
 	var keystore_dir      = `.`
 	var from = `0x9893e46b95e70035cf11c103d5ca425166b0532b`
-	var to    = `0xa0c34337a7b0ab1de7462899cb037d3588d1db92`
+	var to   = `0xa0c34337a7b0ab1de7462899cb037d3588d1db92`
 	amount := big.NewInt(0)
 	gasPrice := big.NewInt(2000000000)
 	gasLimit := uint64(2711301)
@@ -139,6 +135,7 @@ func (c *ComputingInfoController) Upload(ctx *app.UploadComputingInfoContext) er
 		return ctx.BadRequest(
 			goa.ErrBadRequest("upload block failure"))
 	}
+	//TODO( use responsebody)
 	fmt.Printf(returnHash);
 
 	return ctx.OK([]byte(responseBody))
