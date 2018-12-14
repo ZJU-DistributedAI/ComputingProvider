@@ -18,9 +18,9 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// Mount "ComputingInfo" controller
-	c := NewComputingInfoController(service)
-	app.MountComputingInfoController(service, c)
+	// Mount "ComputingProvider" controller
+	c := NewComputingProviderController(service)
+	app.MountComputingProviderController(service, c)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)
 	app.MountSwaggerController(service, c2)
@@ -29,7 +29,7 @@ func main() {
 	app.MountSwaggerUIDistController(service, c3)
 
 	// Start service
-	if err := service.ListenAndServe(":3001"); err != nil {
+	if err := service.ListenAndServe(":8899"); err != nil {
 		service.LogError("startup", "err", err)
 	}
 

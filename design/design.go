@@ -15,28 +15,61 @@ import (
 var _ = API("computingProvider service APIs", func() {
 	Title("ComputingProvider service APIs documentation")
 	Description("This API includes a list of computingProvider utilities which can be used by any participants in our system")
-	Host("localhost:3001")
+	Host("localhost:8899")
 	Scheme("http")
-	BasePath("api/v0")
+
 })
 
-var _ = Resource("Storage", func() {
-	Action("cat", func() {
-		Routing(GET("storage/:address"))
-		Description("Cat the file in IPFS at :address")
+var _ = Resource("ComputingProvider", func() {
+	BasePath("/computing")
+
+	Action("add", func() {
+		Description("add computing resource")
+		Routing(POST("/add/:hash/:private_key"))
 		Params(func() {
-			Param("address", String, "IPFS address")
+			Param("hash", String, "computing resource IPFS address")
+			Param("private_key", String, "ETH private key for transaction")
 		})
 		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
 	})
 
-	Action("add", func() {
-		Routing(POST("storage"))
-		Description("Upload file to IPFS using multipart post")
-		Payload(FilePayload)
-		MultipartForm()
-		Response(OK)
+	Action("del", func() {
+		Description("delete computing resource")
+		Routing(POST("/del/:hash/:private_key"))
+		Params(func() {
+			Param("hash", String, "computing resource IPFS address")
+			Param("private_key", String, "ETH private key for transaction")
+		})
+		Response(OK, "plain/text")
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("agree", func() {
+		Description("agree computing request for request[ID]")
+		Routing(POST("/agree/:hash/:ETH_key/:request_id"))
+		Params(func() {
+			Param("ETH_key", String, "ETH private key for transaction")
+			Param("request_id", Integer, "request[ID]")
+		})
+		Response(OK, "plain/text")
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("uploadRes", func() {
+		Description("upload result hash for [request_id]")
+		Routing(POST("/upload/:res_hash/:aes_hash/:ETH_key/:request_id"))
+		Params(func() {
+			Param("res_hash", String, "encrypted result hash")
+			Param("aes_hash", String, "encrypted aes key hash")
+			Param("ETH_key", String, "ETH private key for transaction")
+			Param("request_id", Integer, " [request_id]")
+
+		})
+		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 	})
@@ -47,16 +80,6 @@ var FilePayload = Type("FilePayload", func() {
 	Required("file")
 })
 
-//var _ = Resource("Public", func() {
-//	// CORS policy that applies to all actions and file servers of "public" resource
-//	Origin("*", func() {
-//		Methods("GET")
-//	})
-//	Files("/schema/*filepath", "public/schema/")
-//	Files("/swagger/*filepath", "public/swagger/")
-//})
-
-//这里，添加josn和swagger－ui的资源导出
 var _ = Resource("swagger", func() {
 	Origin("*", func() {
 		Methods("GET") // Allow all origins to retrieve the Swagger JSON (CORS)
@@ -66,6 +89,5 @@ var _ = Resource("swagger", func() {
 
 var _ = Resource("swagger-ui-dist", func() {
 
-	//建立静态httpserver
 	Files("/swagger-ui-dist/*filepath", "swagger-ui-dist/")
 })
