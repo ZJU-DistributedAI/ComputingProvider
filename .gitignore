@@ -8,3 +8,4 @@ app
 client
 compose
 public
+generatePrivateKey/node_modules

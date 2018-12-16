@@ -25,8 +25,6 @@ var _ = Resource("ComputingProvider", func() {
 	Action("add", func() {
 		Description("add computing resource")
 		Routing(POST("/add/:hash/:private_key"))
-		Payload(FilePayload)
-		MultipartForm()
 		Params(func() {
 			Param("hash", String, "computing resource IPFS address")
 			Param("private_key", String, "ETH private key for transaction")
@@ -74,11 +72,6 @@ var _ = Resource("ComputingProvider", func() {
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 	})
-})
-
-var FilePayload = Type("FilePayload", func() {
-	Attribute("file", File, "file")
-	Required("file")
 })
 
 var _ = Resource("swagger", func() {
