@@ -17,7 +17,6 @@ var _ = API("computingProvider service APIs", func() {
 	Description("This API includes a list of computingProvider utilities which can be used by any participants in our system")
 	Host("localhost:8899")
 	Scheme("http")
-
 })
 
 var _ = Resource("ComputingProvider", func() {
@@ -26,6 +25,8 @@ var _ = Resource("ComputingProvider", func() {
 	Action("add", func() {
 		Description("add computing resource")
 		Routing(POST("/add/:hash/:private_key"))
+		Payload(FilePayload)
+		MultipartForm()
 		Params(func() {
 			Param("hash", String, "computing resource IPFS address")
 			Param("private_key", String, "ETH private key for transaction")

@@ -1,11 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/big"
+	"mime/multipart"
+	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/ZJU-DistributedAI/ComputingProvider/app"
@@ -33,6 +38,8 @@ type TransactionConfig struct {
 	Gas_limit string
 }
 
+var IPFS_HOST = os.Getenv("IPFS_HOST")
+
 // ComputingProviderController implements the ComputingProvider resource.
 type ComputingProviderController struct {
 	*goa.Controller
@@ -45,6 +52,76 @@ func NewComputingProviderController(service *goa.Service) *ComputingProviderCont
 
 // Add runs the add action.
 func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) error {
+	// upload file start
+	file, err := ctx.Payload.File.Open()
+	fmt.Println("ctx file===========>", err)
+	if err != nil {
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Could not open file", "API", "add", "Err", err.Error()))
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	localFileName := ctx.Payload.File.Filename
+	part, err := writer.CreateFormFile("uploadfile", localFileName)
+	fmt.Println("ctx part===========>", err)
+	if err != nil {
+		return ctx.InternalServerError(
+			goa.ErrInternal("Could not create form file", "API", "add", "Err", err.Error()))
+	}
+	_, err = io.Copy(part, file)
+	err = writer.Close()
+	fmt.Println("ctx err===========>", err)
+	if err != nil {
+		return ctx.InternalServerError(
+			goa.ErrInternal("Could not close form writter", "API", "add", "Err", err.Error()))
+	}
+
+	// url := fmt.Sprintf("http://%s:5001/api/v0/add", IPFS_HOST)
+	url := fmt.Sprintf("http://47.52.231.230:8899/storage")
+	req, err := http.NewRequest("POST", url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	fmt.Println("ctx body===========>", body)
+	if err != nil {
+		return ctx.InternalServerError(
+			goa.ErrInternal("Error creating post request", "API", "add", "Err", err.Error()))
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	fmt.Println("ctx resp===========>", resp)
+	if err != nil {
+		return ctx.InternalServerError(
+			goa.ErrInternal("Error posting request to IPFS", "API", "add", "Err", err.Error()))
+	}
+	defer resp.Body.Close()
+	responseBody, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("ctx responseBody===========>", responseBody)
+	if err != nil {
+		return ctx.InternalServerError(
+			goa.ErrInternal("Error closing IPFS response body", "API", "add", "Err", err.Error()))
+	}
+	// get hash to signature offline, then send raw transaction to ethereum
+	// type ResponseStruct struct {
+	// 	Name string `json:"name"`
+	// 	Hash string `json:"card_balance"`
+	// }
+	// var responseStruct ResponseStruct
+	// err = json.Unmarshal(responseBody, &responseStruct) //json = > struct
+	fmt.Println("responseBody===========>", responseBody)
+	// fmt.Println("ctx json.Unmarshal===========>", err)
+	if err != nil {
+		return ctx.BadRequest(
+			goa.ErrBadRequest("json parse failure"))
+	}
+	// hash := responseStruct.Hash
+	hash := string(responseBody[:])
+
+	ctx.Hash = hash
+	// return ctx.OK([]byte(responseBody))
+	// uplaod file end
 	// check arguments
 	if checkArguments(ctx.Hash, ctx.PrivateKey) == false {
 		fmt.Println("ctx.Hash===========>", ctx.Hash)
@@ -100,38 +177,12 @@ func (c *ComputingProviderController) Agree(ctx *app.AgreeComputingProviderConte
 
 // Del runs the del action.
 func (c *ComputingProviderController) Del(ctx *app.DelComputingProviderContext) error {
-	// check
-	if checkArguments(ctx.Hash, ctx.PrivateKey) == false {
-		return ctx.BadRequest(
-			goa.ErrBadRequest("Invalid arguments!"))
-	}
-	// read config
-	config := readConfig()
-	if config == nil {
-		goa.LogInfo(context.Background(), "Config of computing provider error")
-		return ctx.InternalServerError(
-			goa.ErrInternal("Config of computing provider error"))
-	}
-	// generate transaction
-	tx, err := generateTransaction("del", ctx.Hash, ctx.PrivateKey, config)
-	if err != nil {
-		return ctx.InternalServerError(
-			goa.ErrInternal("Generate transaction failed!"))
-	}
-	// sign transaction
-	signedTx, err := signTransaction(tx, ctx.PrivateKey)
-	if err != nil {
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to sign transaction"))
-	}
+	// ComputingProviderController_Del: start_implement
 
-	// send transaction
-	transactionHash, err := sendTransaction(signedTx, config.ETH_HOST)
-	if err != nil {
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to send transaction"))
-	}
-	return ctx.OK([]byte(transactionHash))
+	// Put your logic here
+
+	return nil
+	// ComputingProviderController_Del: end_implement
 }
 
 // UploadRes runs the uploadRes action.
