@@ -33,6 +33,13 @@ type TransactionConfig struct {
 	Gas_limit string
 }
 
+type OpType string
+
+const (
+	ADD OpType = "add"
+	DEL OpType = "del"
+)
+
 var IPFS_API = "http://47.52.231.230:8899"
 
 // ComputingProviderController implements the ComputingProvider resource.
@@ -49,7 +56,6 @@ func NewComputingProviderController(service *goa.Service) *ComputingProviderCont
 func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) error {
 	// check arguments
 	if checkArguments(ctx.Hash, ctx.PrivateKey) == false {
-		fmt.Println("ctx.Hash===========>", ctx.Hash)
 		return ctx.BadRequest(
 			goa.ErrBadRequest("Invalid arguments!"))
 	}
@@ -57,34 +63,16 @@ func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) 
 	// read config
 	config := readConfig()
 	if config == nil {
-		fmt.Println("readConfig config===========>", config)
 		goa.LogInfo(context.Background(), "Config of computing provider error")
 		return ctx.InternalServerError(
 			goa.ErrInternal("Config of computing provider error"))
 	}
 
-	// generate transaction
-	tx, err := generateTransaction("add", ctx.Hash, ctx.PrivateKey, config)
+	// operate transaction
+	transactionHash, err := operateTrasaction(ADD, ctx.Hash, ctx.PrivateKey, config)
 	if err != nil {
-		fmt.Println("generateTransaction tx===========>", tx)
 		return ctx.InternalServerError(
-			goa.ErrInternal("Generate transaction failed!"))
-	}
-
-	// sign transaction
-	signedTx, err := signTransaction(tx, ctx.PrivateKey)
-	if err != nil {
-		fmt.Println("signTransaction signedTx===========>", signedTx)
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to sign transaction"))
-	}
-
-	// send transaction
-	transactionHash, err := sendTransaction(signedTx, config.ETH_HOST)
-	if err != nil {
-		fmt.Println("sendTransaction transactionHash===========>", transactionHash)
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to send transaction"))
+			goa.ErrInternal("operateTrasaction failure"))
 	}
 
 	return ctx.OK([]byte(transactionHash))
@@ -118,30 +106,12 @@ func (c *ComputingProviderController) Del(ctx *app.DelComputingProviderContext) 
 			goa.ErrInternal("Config of computing provider error"))
 	}
 
-	// generate transaction
-	tx, err := generateTransaction("add", ctx.Hash, ctx.PrivateKey, config)
+	// operate transaction
+	transactionHash, err := operateTrasaction(DEL, ctx.Hash, ctx.PrivateKey, config)
 	if err != nil {
-		fmt.Println("generateTransaction tx===========>", tx)
 		return ctx.InternalServerError(
-			goa.ErrInternal("Generate transaction failed!"))
+			goa.ErrInternal("operateTrasaction failure"))
 	}
-
-	// sign transaction
-	signedTx, err := signTransaction(tx, ctx.PrivateKey)
-	if err != nil {
-		fmt.Println("signTransaction signedTx===========>", signedTx)
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to sign transaction"))
-	}
-
-	// send transaction
-	transactionHash, err := sendTransaction(signedTx, config.ETH_HOST)
-	if err != nil {
-		fmt.Println("sendTransaction transactionHash===========>", transactionHash)
-		return ctx.InternalServerError(
-			goa.ErrInternal("Fail to send transaction"))
-	}
-
 	return ctx.OK([]byte(transactionHash))
 }
 
@@ -182,7 +152,32 @@ func readConfig() *TransactionConfig {
 	return config
 }
 
-func generateTransaction(op string, hash string, privateKeyStr string, config *TransactionConfig) (*types.Transaction, error) {
+// generate sign, sign, send transaction, return hash
+func operateTrasaction(op OpType, hash string, privateKey string, config *TransactionConfig) (string, error) {
+	// generate transaction
+	tx, err := generateTransaction(op, hash, privateKey, config)
+	if err != nil {
+		fmt.Println("Generate transaction failed!")
+		return "", err
+	}
+
+	// sign transaction
+	signedTx, err := signTransaction(tx, privateKey)
+	if err != nil {
+		fmt.Println("Fail to sign transaction")
+		return "", err
+	}
+
+	// send transaction
+	transactionHash, err := sendTransaction(signedTx, config.ETH_HOST)
+	if err != nil {
+		fmt.Println("Fail to send transaction")
+		return "", err
+	}
+	return transactionHash, nil
+}
+
+func generateTransaction(op OpType, hash string, privateKeyStr string, config *TransactionConfig) (*types.Transaction, error) {
 
 	// get paraments of  transaction
 	value, gasLimite, gasPrice, err := trans_type(config)
