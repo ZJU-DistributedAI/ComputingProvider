@@ -12,39 +12,66 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
-var _ = API("computingProvider service APIs", func() {
-	Title("ComputingProvider service APIs documentation")
-	Description("This API includes a list of computingProvider utilities which can be used by any participants in our system")
-	Host("localhost:3001")
-	Scheme("http")
-	BasePath("api/v0")
-})
 
-var _ = Resource("Storage", func() {
-	Action("cat", func() {
-		Routing(GET("storage/:address"))
-		Description("Cat the file in IPFS at :address")
-		Params(func() {
-			Param("address", String, "IPFS address")
-		})
-		Response(OK, "plain/text")
-		Response(InternalServerError, ErrorMedia)
-	})
+/*
+********************************************************
+(2)  Computing Provider Client
+********************************************************
+ */
+
+var _ = Resource("ComputingProvider", func() {
+	BasePath("/computing")
 
 	Action("add", func() {
-		Routing(POST("storage"))
-		Description("Upload file to IPFS using multipart post")
-		Payload(FilePayload)
-		MultipartForm()
-		Response(OK)
+		Description("add computing resource")
+		Routing(POST("/add/:hash/:private_key"))
+		Params(func() {
+			Param("hash", String, "computing resource IPFS address")
+			Param("private_key", String, "ETH private key for transaction")
+		})
+		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 	})
-})
 
-var FilePayload = Type("FilePayload", func() {
-	Attribute("file", File, "file")
-	Required("file")
+	Action("del", func() {
+		Description("delete computing resource")
+		Routing(POST("/del/:hash/:private_key"))
+		Params(func() {
+			Param("hash", String, "computing resource IPFS address")
+			Param("private_key", String, "ETH private key for transaction")
+		})
+		Response(OK,  "plain/text")
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("agree", func() {
+		Description("agree computing request for request[ID]")
+		Routing(POST("/agree/:hash/:ETH_key/:request_id"))
+		Params(func() {
+			Param("ETH_key", String, "ETH private key for transaction")
+			Param("request_id", Integer, "request[ID]")
+		})
+		Response(OK,  "plain/text")
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("uploadRes", func() {
+		Description("upload result hash for [request_id]")
+		Routing(POST("/upload/:res_hash/:aes_hash/:ETH_key/:request_id"))
+		Params(func() {
+			Param("res_hash", String, "encrypted result hash")
+			Param("aes_hash", String, "encrypted aes key hash")
+			Param("ETH_key", String, "ETH private key for transaction")
+			Param("request_id", Integer, " [request_id]")
+
+		})
+		Response(OK,  "plain/text")
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+	})
 })
 
 //var _ = Resource("Public", func() {

@@ -1,16 +1,16 @@
-//go:generate goagen bootstrap -d github.com/ZJU-DistributedAI/ComputingProvider/design
+//go:generate goagen bootstrap -d ComputingProvider/design
 
 package main
 
 import (
-	"github.com/ZJU-DistributedAI/ComputingProvider/app"
+	"ComputingProvider/app"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 )
 
 func main() {
 	// Create service
-	service := goa.New("computingProvider service APIs")
+	service := goa.New("")
 
 	// Mount middleware
 	service.Use(middleware.RequestID())
@@ -18,9 +18,9 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// Mount "ComputingInfo" controller
-	c := NewComputingInfoController(service)
-	app.MountComputingInfoController(service, c)
+	// Mount "ComputingProvider" controller
+	c := NewComputingProviderController(service)
+	app.MountComputingProviderController(service, c)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)
 	app.MountSwaggerController(service, c2)
@@ -29,7 +29,7 @@ func main() {
 	app.MountSwaggerUIDistController(service, c3)
 
 	// Start service
-	if err := service.ListenAndServe(":3001"); err != nil {
+	if err := service.ListenAndServe(":8080"); err != nil {
 		service.LogError("startup", "err", err)
 	}
 

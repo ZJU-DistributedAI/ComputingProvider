@@ -1,9 +1,9 @@
 package main
 
 import (
+	"ComputingProvider/client"
+	"ComputingProvider/tool/cli"
 	"fmt"
-	"github.com/ZJU-DistributedAI/ComputingProvider/client"
-	"github.com/ZJU-DistributedAI/ComputingProvider/tool/cli"
 	goaclient "github.com/goadesign/goa/client"
 	"github.com/spf13/cobra"
 	"net/http"
@@ -14,8 +14,8 @@ import (
 func main() {
 	// Create command line parser
 	app := &cobra.Command{
-		Use:   "computingProvider service APIs-cli",
-		Short: `CLI client for the computingProvider service APIs service`,
+		Use:   "-cli",
+		Short: `CLI client for the  service`,
 	}
 
 	// Create client struct
@@ -24,12 +24,12 @@ func main() {
 
 	// Register global flags
 	app.PersistentFlags().StringVarP(&c.Scheme, "scheme", "s", "", "Set the requests scheme")
-	app.PersistentFlags().StringVarP(&c.Host, "host", "H", "localhost:3001", "API hostname")
+	app.PersistentFlags().StringVarP(&c.Host, "host", "H", "", "API hostname")
 	app.PersistentFlags().DurationVarP(&httpClient.Timeout, "timeout", "t", time.Duration(20)*time.Second, "Set the request timeout")
 	app.PersistentFlags().BoolVar(&c.Dump, "dump", false, "Dump HTTP request and response.")
 
 	// Initialize API client
-	c.UserAgent = "computingProvider service APIs-cli/0"
+	c.UserAgent = "-cli/0"
 
 	// Register API commands
 	cli.RegisterCommands(app, c)

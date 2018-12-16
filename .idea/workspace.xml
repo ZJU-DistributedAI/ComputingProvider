@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="55ac9d5b-05b6-418c-9501-bec2b83280a3" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTC--2018-11-15T13-17-11.427354517Z--9893e46b95e70035cf11c103d5ca425166b0532b" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_build.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_clean.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_start.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/contexts.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/contexts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/hrefs.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/hrefs.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/media_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/media_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/test/computing_info_testing.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/user_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/user_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/computing_info.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/media_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/media_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/user_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/user_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/computing_info.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/design/design.go" beforeDir="false" afterPath="$PROJECT_DIR$/design/design.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/schema/schema.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/swagger/swagger-ui.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/swagger/swagger.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/swagger/swagger.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist.go" beforeDir="false" afterPath="$PROJECT_DIR$/swagger-ui-dist.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/favicon-16x16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/favicon-32x32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/oauth2-redirect.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui-bundle.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui-bundle.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui-standalone-preset.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui-standalone-preset.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui.css.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-ui-dist/swagger-ui.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger.go" beforeDir="false" afterPath="$PROJECT_DIR$/swagger.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/swagger/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/swagger/swagger.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/cli/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/tool/cli/commands.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/computingprovider-service-apis-cli/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/transaction/sendTransaction.go" beforeDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="design.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/design/design.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-869">
+              <caret line="10" column="39" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="computing_provider.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/computing_provider.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="396">
+              <caret line="38" column="45" selection-start-line="38" selection-start-column="45" selection-end-line="38" selection-end-column="45" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="GOROOT" path="$PROJECT_DIR$/../../../Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/design/design.go" />
+        <option value="$PROJECT_DIR$/computing_provider.go" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="64" />
+    <option name="y" value="64" />
+    <option name="width" value="1612" />
+    <option name="height" value="991" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="ComputingProvider" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ComputingProvider" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.gopath.indexing.explicitly.defined" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="64" y="64" width="1612" height="991" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.32983682" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/design/design.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-869">
+          <caret line="10" column="39" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/computing_provider.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="38" column="45" selection-start-line="38" selection-start-column="45" selection-end-line="38" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
