@@ -44,19 +44,19 @@ definitions:
 info:
   version: ""
 paths:
-  /computing/add/{hash}/{private_key}:
+  /computing/add/{hash}/{ETH_key}:
     post:
       description: add computing resource
       operationId: ComputingProvider#add
       parameters:
-      - description: computing resource IPFS address
-        in: path
-        name: hash
-        required: true
-        type: string
       - description: ETH private key for transaction
         in: path
-        name: private_key
+        name: ETH_key
+        required: true
+        type: string
+      - description: data IPFS address
+        in: path
+        name: hash
         required: true
         type: string
       produces:
@@ -73,10 +73,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/error'
       summary: add ComputingProvider
       tags:
       - ComputingProvider
-  /computing/agree/{hash}/{ETH_key}/{request_id}:
+  /computing/agree/{ETH_key}/{computing_hash}/{contract_hash}/{public_key}:
     post:
       description: agree computing request for request[ID]
       operationId: ComputingProvider#agree
@@ -86,15 +90,21 @@ paths:
         name: ETH_key
         required: true
         type: string
-      - in: path
-        name: hash
+      - description: computing resourse hash
+        in: path
+        name: computing_hash
         required: true
         type: string
-      - description: request[ID]
+      - description: smart contract hash
         in: path
-        name: request_id
+        name: contract_hash
         required: true
-        type: integer
+        type: string
+      - description: ETH public key(Wallet address)
+        in: path
+        name: public_key
+        required: true
+        type: string
       produces:
       - application/vnd.goa.error
       - plain/text
@@ -107,24 +117,28 @@ paths:
             $ref: '#/definitions/error'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
           schema:
             $ref: '#/definitions/error'
       summary: agree ComputingProvider
       tags:
       - ComputingProvider
-  /computing/del/{hash}/{private_key}:
+  /computing/del/{hash}/{ETH_key}:
     post:
       description: delete computing resource
       operationId: ComputingProvider#del
       parameters:
-      - description: computing resource IPFS address
-        in: path
-        name: hash
-        required: true
-        type: string
       - description: ETH private key for transaction
         in: path
-        name: private_key
+        name: ETH_key
+        required: true
+        type: string
+      - description: data IPFS address
+        in: path
+        name: hash
         required: true
         type: string
       produces:
@@ -139,6 +153,10 @@ paths:
             $ref: '#/definitions/error'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
           schema:
             $ref: '#/definitions/error'
       summary: del ComputingProvider
@@ -181,6 +199,10 @@ paths:
             $ref: '#/definitions/error'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
           schema:
             $ref: '#/definitions/error'
       summary: uploadRes ComputingProvider

@@ -24,40 +24,47 @@ var _ = Resource("ComputingProvider", func() {
 
 	Action("add", func() {
 		Description("add computing resource")
-		Routing(POST("/add/:hash/:private_key"))
+		Routing(POST("/add/:hash/:ETH_key"))
 		Params(func() {
-			Param("hash", String, "computing resource IPFS address")
-			Param("private_key", String, "ETH private key for transaction")
+			Param("hash", String, "data IPFS address")						// 运算资源的ipfs地址
+			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
 		})
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
 	Action("del", func() {
 		Description("delete computing resource")
-		Routing(POST("/del/:hash/:private_key"))
+		Routing(POST("/del/:hash/:ETH_key"))
 		Params(func() {
-			Param("hash", String, "computing resource IPFS address")
-			Param("private_key", String, "ETH private key for transaction")
+			Param("hash", String, "data IPFS address")						// 运算资源的ipfs地址
+			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
 		})
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
 	Action("agree", func() {
 		Description("agree computing request for request[ID]")
-		Routing(POST("/agree/:hash/:ETH_key/:request_id"))
+		Routing(POST("/agree/:ETH_key/:computing_hash/:contract_hash/:public_key"))
 		Params(func() {
-			Param("ETH_key", String, "ETH private key for transaction")
-			Param("request_id", Integer, "request[ID]")
+			// 智能合约地址，被请求的运算资源地址，请求运算资源的客户端钱包地址可以成为运算资源请求的唯一标识
+			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
+			Param("computing_hash", String, "computing resourse hash")		// 被请求的数据的运算资源地址
+			Param("contract_hash", String, "smart contract hash")				// 智能合约的地址
+			Param("public_key", String, "ETH public key(Wallet address)")		// 数据方客户端的公钥，即钱包地址
 		})
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
+	// TODO
 	Action("uploadRes", func() {
 		Description("upload result hash for [request_id]")
 		Routing(POST("/upload/:res_hash/:aes_hash/:ETH_key/:request_id"))
@@ -71,6 +78,7 @@ var _ = Resource("ComputingProvider", func() {
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 })
 

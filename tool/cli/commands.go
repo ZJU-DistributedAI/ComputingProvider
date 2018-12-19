@@ -31,10 +31,10 @@ import (
 type (
 	// AddComputingProviderCommand is the command line data structure for the add action of ComputingProvider
 	AddComputingProviderCommand struct {
-		// computing resource IPFS address
-		Hash string
 		// ETH private key for transaction
-		PrivateKey  string
+		ETHKey string
+		// data IPFS address
+		Hash        string
 		PrettyPrint bool
 	}
 
@@ -42,18 +42,21 @@ type (
 	AgreeComputingProviderCommand struct {
 		// ETH private key for transaction
 		ETHKey string
-		Hash   string
-		// request[ID]
-		RequestID   int
+		// computing resourse hash
+		ComputingHash string
+		// smart contract hash
+		ContractHash string
+		// ETH public key(Wallet address)
+		PublicKey   string
 		PrettyPrint bool
 	}
 
 	// DelComputingProviderCommand is the command line data structure for the del action of ComputingProvider
 	DelComputingProviderCommand struct {
-		// computing resource IPFS address
-		Hash string
 		// ETH private key for transaction
-		PrivateKey  string
+		ETHKey string
+		// data IPFS address
+		Hash        string
 		PrettyPrint bool
 	}
 
@@ -86,7 +89,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(AddComputingProviderCommand)
 	sub = &cobra.Command{
-		Use:   `computing-provider ["/computing/add/HASH/PRIVATE_KEY"]`,
+		Use:   `computing-provider ["/computing/add/HASH/ETH_KEY"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -100,7 +103,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp2 := new(AgreeComputingProviderCommand)
 	sub = &cobra.Command{
-		Use:   `computing-provider ["/computing/agree/HASH/ETH_KEY/REQUEST_ID"]`,
+		Use:   `computing-provider ["/computing/agree/ETH_KEY/COMPUTING_HASH/CONTRACT_HASH/PUBLIC_KEY"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -114,7 +117,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp3 := new(DelComputingProviderCommand)
 	sub = &cobra.Command{
-		Use:   `computing-provider ["/computing/del/HASH/PRIVATE_KEY"]`,
+		Use:   `computing-provider ["/computing/del/HASH/ETH_KEY"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -355,7 +358,7 @@ func (cmd *AddComputingProviderCommand) Run(c *client.Client, args []string) err
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/computing/add/%v/%v", url.QueryEscape(cmd.Hash), url.QueryEscape(cmd.PrivateKey))
+		path = fmt.Sprintf("/computing/add/%v/%v", url.QueryEscape(cmd.Hash), url.QueryEscape(cmd.ETHKey))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -371,10 +374,10 @@ func (cmd *AddComputingProviderCommand) Run(c *client.Client, args []string) err
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *AddComputingProviderCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var eTHKey string
+	cc.Flags().StringVar(&cmd.ETHKey, "ETH_key", eTHKey, `ETH private key for transaction`)
 	var hash string
-	cc.Flags().StringVar(&cmd.Hash, "hash", hash, `computing resource IPFS address`)
-	var privateKey string
-	cc.Flags().StringVar(&cmd.PrivateKey, "private_key", privateKey, `ETH private key for transaction`)
+	cc.Flags().StringVar(&cmd.Hash, "hash", hash, `data IPFS address`)
 }
 
 // Run makes the HTTP request corresponding to the AgreeComputingProviderCommand command.
@@ -383,7 +386,7 @@ func (cmd *AgreeComputingProviderCommand) Run(c *client.Client, args []string) e
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/computing/agree/%v/%v/%v", url.QueryEscape(cmd.Hash), url.QueryEscape(cmd.ETHKey), cmd.RequestID)
+		path = fmt.Sprintf("/computing/agree/%v/%v/%v/%v", url.QueryEscape(cmd.ETHKey), url.QueryEscape(cmd.ComputingHash), url.QueryEscape(cmd.ContractHash), url.QueryEscape(cmd.PublicKey))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -401,10 +404,12 @@ func (cmd *AgreeComputingProviderCommand) Run(c *client.Client, args []string) e
 func (cmd *AgreeComputingProviderCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var eTHKey string
 	cc.Flags().StringVar(&cmd.ETHKey, "ETH_key", eTHKey, `ETH private key for transaction`)
-	var hash string
-	cc.Flags().StringVar(&cmd.Hash, "hash", hash, ``)
-	var requestID int
-	cc.Flags().IntVar(&cmd.RequestID, "request_id", requestID, `request[ID]`)
+	var computingHash string
+	cc.Flags().StringVar(&cmd.ComputingHash, "computing_hash", computingHash, `computing resourse hash`)
+	var contractHash string
+	cc.Flags().StringVar(&cmd.ContractHash, "contract_hash", contractHash, `smart contract hash`)
+	var publicKey string
+	cc.Flags().StringVar(&cmd.PublicKey, "public_key", publicKey, `ETH public key(Wallet address)`)
 }
 
 // Run makes the HTTP request corresponding to the DelComputingProviderCommand command.
@@ -413,7 +418,7 @@ func (cmd *DelComputingProviderCommand) Run(c *client.Client, args []string) err
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/computing/del/%v/%v", url.QueryEscape(cmd.Hash), url.QueryEscape(cmd.PrivateKey))
+		path = fmt.Sprintf("/computing/del/%v/%v", url.QueryEscape(cmd.Hash), url.QueryEscape(cmd.ETHKey))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -429,10 +434,10 @@ func (cmd *DelComputingProviderCommand) Run(c *client.Client, args []string) err
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DelComputingProviderCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var eTHKey string
+	cc.Flags().StringVar(&cmd.ETHKey, "ETH_key", eTHKey, `ETH private key for transaction`)
 	var hash string
-	cc.Flags().StringVar(&cmd.Hash, "hash", hash, `computing resource IPFS address`)
-	var privateKey string
-	cc.Flags().StringVar(&cmd.PrivateKey, "private_key", privateKey, `ETH private key for transaction`)
+	cc.Flags().StringVar(&cmd.Hash, "hash", hash, `data IPFS address`)
 }
 
 // Run makes the HTTP request corresponding to the UploadResComputingProviderCommand command.

@@ -22,8 +22,8 @@ type AddComputingProviderContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Hash       string
-	PrivateKey string
+	ETHKey string
+	Hash   string
 }
 
 // NewAddComputingProviderContext parses the incoming request URL and body, performs validations and creates the
@@ -35,15 +35,15 @@ func NewAddComputingProviderContext(ctx context.Context, r *http.Request, servic
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := AddComputingProviderContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramETHKey := req.Params["ETH_key"]
+	if len(paramETHKey) > 0 {
+		rawETHKey := paramETHKey[0]
+		rctx.ETHKey = rawETHKey
+	}
 	paramHash := req.Params["hash"]
 	if len(paramHash) > 0 {
 		rawHash := paramHash[0]
 		rctx.Hash = rawHash
-	}
-	paramPrivateKey := req.Params["private_key"]
-	if len(paramPrivateKey) > 0 {
-		rawPrivateKey := paramPrivateKey[0]
-		rctx.PrivateKey = rawPrivateKey
 	}
 	return &rctx, err
 }
@@ -74,14 +74,23 @@ func (ctx *AddComputingProviderContext) InternalServerError(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
 }
 
+// NotImplemented sends a HTTP response with status code 501.
+func (ctx *AddComputingProviderContext) NotImplemented(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 501, r)
+}
+
 // AgreeComputingProviderContext provides the ComputingProvider agree action context.
 type AgreeComputingProviderContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	ETHKey    string
-	Hash      string
-	RequestID int
+	ETHKey        string
+	ComputingHash string
+	ContractHash  string
+	PublicKey     string
 }
 
 // NewAgreeComputingProviderContext parses the incoming request URL and body, performs validations and creates the
@@ -98,19 +107,20 @@ func NewAgreeComputingProviderContext(ctx context.Context, r *http.Request, serv
 		rawETHKey := paramETHKey[0]
 		rctx.ETHKey = rawETHKey
 	}
-	paramHash := req.Params["hash"]
-	if len(paramHash) > 0 {
-		rawHash := paramHash[0]
-		rctx.Hash = rawHash
+	paramComputingHash := req.Params["computing_hash"]
+	if len(paramComputingHash) > 0 {
+		rawComputingHash := paramComputingHash[0]
+		rctx.ComputingHash = rawComputingHash
 	}
-	paramRequestID := req.Params["request_id"]
-	if len(paramRequestID) > 0 {
-		rawRequestID := paramRequestID[0]
-		if requestID, err2 := strconv.Atoi(rawRequestID); err2 == nil {
-			rctx.RequestID = requestID
-		} else {
-			err = goa.MergeErrors(err, goa.InvalidParamTypeError("request_id", rawRequestID, "integer"))
-		}
+	paramContractHash := req.Params["contract_hash"]
+	if len(paramContractHash) > 0 {
+		rawContractHash := paramContractHash[0]
+		rctx.ContractHash = rawContractHash
+	}
+	paramPublicKey := req.Params["public_key"]
+	if len(paramPublicKey) > 0 {
+		rawPublicKey := paramPublicKey[0]
+		rctx.PublicKey = rawPublicKey
 	}
 	return &rctx, err
 }
@@ -141,13 +151,21 @@ func (ctx *AgreeComputingProviderContext) InternalServerError(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
 }
 
+// NotImplemented sends a HTTP response with status code 501.
+func (ctx *AgreeComputingProviderContext) NotImplemented(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 501, r)
+}
+
 // DelComputingProviderContext provides the ComputingProvider del action context.
 type DelComputingProviderContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Hash       string
-	PrivateKey string
+	ETHKey string
+	Hash   string
 }
 
 // NewDelComputingProviderContext parses the incoming request URL and body, performs validations and creates the
@@ -159,15 +177,15 @@ func NewDelComputingProviderContext(ctx context.Context, r *http.Request, servic
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := DelComputingProviderContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramETHKey := req.Params["ETH_key"]
+	if len(paramETHKey) > 0 {
+		rawETHKey := paramETHKey[0]
+		rctx.ETHKey = rawETHKey
+	}
 	paramHash := req.Params["hash"]
 	if len(paramHash) > 0 {
 		rawHash := paramHash[0]
 		rctx.Hash = rawHash
-	}
-	paramPrivateKey := req.Params["private_key"]
-	if len(paramPrivateKey) > 0 {
-		rawPrivateKey := paramPrivateKey[0]
-		rctx.PrivateKey = rawPrivateKey
 	}
 	return &rctx, err
 }
@@ -196,6 +214,14 @@ func (ctx *DelComputingProviderContext) InternalServerError(r error) error {
 		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// NotImplemented sends a HTTP response with status code 501.
+func (ctx *DelComputingProviderContext) NotImplemented(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 501, r)
 }
 
 // UploadResComputingProviderContext provides the ComputingProvider uploadRes action context.
@@ -269,4 +295,12 @@ func (ctx *UploadResComputingProviderContext) InternalServerError(r error) error
 		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// NotImplemented sends a HTTP response with status code 501.
+func (ctx *UploadResComputingProviderContext) NotImplemented(r error) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 501, r)
 }

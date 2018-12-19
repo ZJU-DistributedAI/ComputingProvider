@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AddComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) (http.ResponseWriter, error) {
+func AddComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -49,7 +49,7 @@ func AddComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/add/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/add/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -57,7 +57,7 @@ func AddComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -98,7 +98,7 @@ func AddComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AddComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) (http.ResponseWriter, error) {
+func AddComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -119,7 +119,7 @@ func AddComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/add/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/add/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -127,7 +127,7 @@ func AddComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -164,11 +164,81 @@ func AddComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	return rw, mt
 }
 
+// AddComputingProviderNotImplemented runs the method Add of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func AddComputingProviderNotImplemented(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/computing/add/%v/%v", hash, eTHKey),
+	}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "ComputingProviderTest"), rw, req, prms)
+	addCtx, _err := app.NewAddComputingProviderContext(goaCtx, req, service)
+	if _err != nil {
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		return nil, e
+	}
+
+	// Perform action
+	_err = ctrl.Add(addCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 501 {
+		t.Errorf("invalid response status code: got %+v, expected 501", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
+
+	// Return results
+	return rw, mt
+}
+
 // AddComputingProviderOK runs the method Add of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AddComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) http.ResponseWriter {
+func AddComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -188,7 +258,7 @@ func AddComputingProviderOK(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/add/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/add/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -196,7 +266,7 @@ func AddComputingProviderOK(t goatest.TInterface, ctx context.Context, service *
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -230,7 +300,7 @@ func AddComputingProviderOK(t goatest.TInterface, ctx context.Context, service *
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AgreeComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string, requestID int) (http.ResponseWriter, error) {
+func AgreeComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, eTHKey string, computingHash string, contractHash string, publicKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -251,16 +321,17 @@ func AgreeComputingProviderBadRequest(t goatest.TInterface, ctx context.Context,
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/agree/%v/%v/%v", hash, eTHKey, requestID),
+		Path: fmt.Sprintf("/computing/agree/%v/%v/%v/%v", eTHKey, computingHash, contractHash, publicKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
 	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
-	prms["request_id"] = []string{fmt.Sprintf("%v", requestID)}
+	prms["computing_hash"] = []string{fmt.Sprintf("%v", computingHash)}
+	prms["contract_hash"] = []string{fmt.Sprintf("%v", contractHash)}
+	prms["public_key"] = []string{fmt.Sprintf("%v", publicKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -301,7 +372,7 @@ func AgreeComputingProviderBadRequest(t goatest.TInterface, ctx context.Context,
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AgreeComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string, requestID int) (http.ResponseWriter, error) {
+func AgreeComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, eTHKey string, computingHash string, contractHash string, publicKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -322,16 +393,17 @@ func AgreeComputingProviderInternalServerError(t goatest.TInterface, ctx context
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/agree/%v/%v/%v", hash, eTHKey, requestID),
+		Path: fmt.Sprintf("/computing/agree/%v/%v/%v/%v", eTHKey, computingHash, contractHash, publicKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
 	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
-	prms["request_id"] = []string{fmt.Sprintf("%v", requestID)}
+	prms["computing_hash"] = []string{fmt.Sprintf("%v", computingHash)}
+	prms["contract_hash"] = []string{fmt.Sprintf("%v", contractHash)}
+	prms["public_key"] = []string{fmt.Sprintf("%v", publicKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -368,11 +440,83 @@ func AgreeComputingProviderInternalServerError(t goatest.TInterface, ctx context
 	return rw, mt
 }
 
+// AgreeComputingProviderNotImplemented runs the method Agree of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func AgreeComputingProviderNotImplemented(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, eTHKey string, computingHash string, contractHash string, publicKey string) (http.ResponseWriter, error) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/computing/agree/%v/%v/%v/%v", eTHKey, computingHash, contractHash, publicKey),
+	}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
+	prms["computing_hash"] = []string{fmt.Sprintf("%v", computingHash)}
+	prms["contract_hash"] = []string{fmt.Sprintf("%v", contractHash)}
+	prms["public_key"] = []string{fmt.Sprintf("%v", publicKey)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "ComputingProviderTest"), rw, req, prms)
+	agreeCtx, _err := app.NewAgreeComputingProviderContext(goaCtx, req, service)
+	if _err != nil {
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		return nil, e
+	}
+
+	// Perform action
+	_err = ctrl.Agree(agreeCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 501 {
+		t.Errorf("invalid response status code: got %+v, expected 501", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
+
+	// Return results
+	return rw, mt
+}
+
 // AgreeComputingProviderOK runs the method Agree of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func AgreeComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string, requestID int) http.ResponseWriter {
+func AgreeComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, eTHKey string, computingHash string, contractHash string, publicKey string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -392,16 +536,17 @@ func AgreeComputingProviderOK(t goatest.TInterface, ctx context.Context, service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/agree/%v/%v/%v", hash, eTHKey, requestID),
+		Path: fmt.Sprintf("/computing/agree/%v/%v/%v/%v", eTHKey, computingHash, contractHash, publicKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
 	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
-	prms["request_id"] = []string{fmt.Sprintf("%v", requestID)}
+	prms["computing_hash"] = []string{fmt.Sprintf("%v", computingHash)}
+	prms["contract_hash"] = []string{fmt.Sprintf("%v", contractHash)}
+	prms["public_key"] = []string{fmt.Sprintf("%v", publicKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -435,7 +580,7 @@ func AgreeComputingProviderOK(t goatest.TInterface, ctx context.Context, service
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DelComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) (http.ResponseWriter, error) {
+func DelComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -456,7 +601,7 @@ func DelComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/del/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/del/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -464,7 +609,7 @@ func DelComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -505,7 +650,7 @@ func DelComputingProviderBadRequest(t goatest.TInterface, ctx context.Context, s
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DelComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) (http.ResponseWriter, error) {
+func DelComputingProviderInternalServerError(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -526,7 +671,7 @@ func DelComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/del/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/del/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -534,7 +679,7 @@ func DelComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -571,11 +716,81 @@ func DelComputingProviderInternalServerError(t goatest.TInterface, ctx context.C
 	return rw, mt
 }
 
+// DelComputingProviderNotImplemented runs the method Del of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func DelComputingProviderNotImplemented(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) (http.ResponseWriter, error) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/computing/del/%v/%v", hash, eTHKey),
+	}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "ComputingProviderTest"), rw, req, prms)
+	delCtx, _err := app.NewDelComputingProviderContext(goaCtx, req, service)
+	if _err != nil {
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		return nil, e
+	}
+
+	// Perform action
+	_err = ctrl.Del(delCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 501 {
+		t.Errorf("invalid response status code: got %+v, expected 501", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
+
+	// Return results
+	return rw, mt
+}
+
 // DelComputingProviderOK runs the method Del of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DelComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, privateKey string) http.ResponseWriter {
+func DelComputingProviderOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, hash string, eTHKey string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -595,7 +810,7 @@ func DelComputingProviderOK(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/computing/del/%v/%v", hash, privateKey),
+		Path: fmt.Sprintf("/computing/del/%v/%v", hash, eTHKey),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -603,7 +818,7 @@ func DelComputingProviderOK(t goatest.TInterface, ctx context.Context, service *
 	}
 	prms := url.Values{}
 	prms["hash"] = []string{fmt.Sprintf("%v", hash)}
-	prms["private_key"] = []string{fmt.Sprintf("%v", privateKey)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -763,6 +978,78 @@ func UploadResComputingProviderInternalServerError(t goatest.TInterface, ctx con
 	}
 	if rw.Code != 500 {
 		t.Errorf("invalid response status code: got %+v, expected 500", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
+
+	// Return results
+	return rw, mt
+}
+
+// UploadResComputingProviderNotImplemented runs the method UploadRes of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func UploadResComputingProviderNotImplemented(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ComputingProviderController, resHash string, aesHash string, eTHKey string, requestID int) (http.ResponseWriter, error) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/computing/upload/%v/%v/%v/%v", resHash, aesHash, eTHKey, requestID),
+	}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["res_hash"] = []string{fmt.Sprintf("%v", resHash)}
+	prms["aes_hash"] = []string{fmt.Sprintf("%v", aesHash)}
+	prms["ETH_key"] = []string{fmt.Sprintf("%v", eTHKey)}
+	prms["request_id"] = []string{fmt.Sprintf("%v", requestID)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "ComputingProviderTest"), rw, req, prms)
+	uploadResCtx, _err := app.NewUploadResComputingProviderContext(goaCtx, req, service)
+	if _err != nil {
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		return nil, e
+	}
+
+	// Perform action
+	_err = ctrl.UploadRes(uploadResCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 501 {
+		t.Errorf("invalid response status code: got %+v, expected 501", rw.Code)
 	}
 	var mt error
 	if resp != nil {

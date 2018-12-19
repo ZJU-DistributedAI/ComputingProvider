@@ -58,8 +58,8 @@ func MountComputingProviderController(service *goa.Service, ctrl ComputingProvid
 		}
 		return ctrl.Add(rctx)
 	}
-	service.Mux.Handle("POST", "/computing/add/:hash/:private_key", ctrl.MuxHandler("add", h, nil))
-	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Add", "route", "POST /computing/add/:hash/:private_key")
+	service.Mux.Handle("POST", "/computing/add/:hash/:ETH_key", ctrl.MuxHandler("add", h, nil))
+	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Add", "route", "POST /computing/add/:hash/:ETH_key")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -73,8 +73,8 @@ func MountComputingProviderController(service *goa.Service, ctrl ComputingProvid
 		}
 		return ctrl.Agree(rctx)
 	}
-	service.Mux.Handle("POST", "/computing/agree/:hash/:ETH_key/:request_id", ctrl.MuxHandler("agree", h, nil))
-	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Agree", "route", "POST /computing/agree/:hash/:ETH_key/:request_id")
+	service.Mux.Handle("POST", "/computing/agree/:ETH_key/:computing_hash/:contract_hash/:public_key", ctrl.MuxHandler("agree", h, nil))
+	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Agree", "route", "POST /computing/agree/:ETH_key/:computing_hash/:contract_hash/:public_key")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -88,8 +88,8 @@ func MountComputingProviderController(service *goa.Service, ctrl ComputingProvid
 		}
 		return ctrl.Del(rctx)
 	}
-	service.Mux.Handle("POST", "/computing/del/:hash/:private_key", ctrl.MuxHandler("del", h, nil))
-	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Del", "route", "POST /computing/del/:hash/:private_key")
+	service.Mux.Handle("POST", "/computing/del/:hash/:ETH_key", ctrl.MuxHandler("del", h, nil))
+	service.LogInfo("mount", "ctrl", "ComputingProvider", "action", "Del", "route", "POST /computing/del/:hash/:ETH_key")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request

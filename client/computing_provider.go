@@ -19,9 +19,9 @@ import (
 )
 
 // AddComputingProviderPath computes a request path to the add action of ComputingProvider.
-func AddComputingProviderPath(hash string, privateKey string) string {
+func AddComputingProviderPath(hash string, eTHKey string) string {
 	param0 := hash
-	param1 := privateKey
+	param1 := eTHKey
 
 	return fmt.Sprintf("/computing/add/%s/%s", param0, param1)
 }
@@ -50,12 +50,13 @@ func (c *Client) NewAddComputingProviderRequest(ctx context.Context, path string
 }
 
 // AgreeComputingProviderPath computes a request path to the agree action of ComputingProvider.
-func AgreeComputingProviderPath(hash string, eTHKey string, requestID int) string {
-	param0 := hash
-	param1 := eTHKey
-	param2 := strconv.Itoa(requestID)
+func AgreeComputingProviderPath(eTHKey string, computingHash string, contractHash string, publicKey string) string {
+	param0 := eTHKey
+	param1 := computingHash
+	param2 := contractHash
+	param3 := publicKey
 
-	return fmt.Sprintf("/computing/agree/%s/%s/%s", param0, param1, param2)
+	return fmt.Sprintf("/computing/agree/%s/%s/%s/%s", param0, param1, param2, param3)
 }
 
 // agree computing request for request[ID]
@@ -82,9 +83,9 @@ func (c *Client) NewAgreeComputingProviderRequest(ctx context.Context, path stri
 }
 
 // DelComputingProviderPath computes a request path to the del action of ComputingProvider.
-func DelComputingProviderPath(hash string, privateKey string) string {
+func DelComputingProviderPath(hash string, eTHKey string) string {
 	param0 := hash
-	param1 := privateKey
+	param1 := eTHKey
 
 	return fmt.Sprintf("/computing/del/%s/%s", param0, param1)
 }
