@@ -9,3 +9,4 @@ client
 compose
 public
 generatePrivateKey/node_modules
+.DS_Store
