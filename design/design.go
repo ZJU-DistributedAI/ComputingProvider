@@ -12,12 +12,18 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
+var _ = API("computingProvider service APIs", func() {
+	Title("ComputingProvider service APIs documentation")
+	Description("This API includes a list of computingProvider utilities which can be used by any participants in our system")
+	Host("localhost:8899")
+	Scheme("http")
+})
 
 /*
 ********************************************************
 (2)  Computing Provider Client
 ********************************************************
- */
+*/
 
 var _ = Resource("ComputingProvider", func() {
 	BasePath("/computing")
@@ -26,10 +32,10 @@ var _ = Resource("ComputingProvider", func() {
 		Description("add computing resource")
 		Routing(POST("/add/:hash/:ETH_key"))
 		Params(func() {
-			Param("hash", String, "data IPFS address")						// 运算资源的ipfs地址
-			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
+			Param("hash", String, "data IPFS address")                  // 运算资源的ipfs地址
+			Param("ETH_key", String, "ETH private key for transaction") // 以太坊交易秘钥，以后会隐藏
 		})
-		Response(OK,  "plain/text")
+		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 		Response(NotImplemented, ErrorMedia)
@@ -39,10 +45,10 @@ var _ = Resource("ComputingProvider", func() {
 		Description("delete computing resource")
 		Routing(POST("/del/:hash/:ETH_key"))
 		Params(func() {
-			Param("hash", String, "data IPFS address")						// 运算资源的ipfs地址
-			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
+			Param("hash", String, "data IPFS address")                  // 运算资源的ipfs地址
+			Param("ETH_key", String, "ETH private key for transaction") // 以太坊交易秘钥，以后会隐藏
 		})
-		Response(OK,  "plain/text")
+		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 		Response(NotImplemented, ErrorMedia)
@@ -53,12 +59,12 @@ var _ = Resource("ComputingProvider", func() {
 		Routing(POST("/agree/:ETH_key/:computing_hash/:contract_hash/:public_key"))
 		Params(func() {
 			// 智能合约地址，被请求的运算资源地址，请求运算资源的客户端钱包地址可以成为运算资源请求的唯一标识
-			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
-			Param("computing_hash", String, "computing resourse hash")		// 被请求的数据的运算资源地址
-			Param("contract_hash", String, "smart contract hash")				// 智能合约的地址
-			Param("public_key", String, "ETH public key(Wallet address)")		// 数据方客户端的公钥，即钱包地址
+			Param("ETH_key", String, "ETH private key for transaction")   // 以太坊交易秘钥，以后会隐藏
+			Param("computing_hash", String, "computing resourse hash")    // 被请求的数据的运算资源地址
+			Param("contract_hash", String, "smart contract hash")         // 智能合约的地址
+			Param("public_key", String, "ETH public key(Wallet address)") // 数据方客户端的公钥，即钱包地址
 		})
-		Response(OK,  "plain/text")
+		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 		Response(NotImplemented, ErrorMedia)
@@ -75,23 +81,13 @@ var _ = Resource("ComputingProvider", func() {
 			Param("request_id", Integer, " [request_id]")
 
 		})
-		Response(OK,  "plain/text")
+		Response(OK, "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
 		Response(NotImplemented, ErrorMedia)
 	})
 })
 
-//var _ = Resource("Public", func() {
-//	// CORS policy that applies to all actions and file servers of "public" resource
-//	Origin("*", func() {
-//		Methods("GET")
-//	})
-//	Files("/schema/*filepath", "public/schema/")
-//	Files("/swagger/*filepath", "public/swagger/")
-//})
-
-//这里，添加josn和swagger－ui的资源导出
 var _ = Resource("swagger", func() {
 	Origin("*", func() {
 		Methods("GET") // Allow all origins to retrieve the Swagger JSON (CORS)
@@ -99,8 +95,7 @@ var _ = Resource("swagger", func() {
 	Files("/swagger.json", "swagger/swagger.json")
 })
 
-var _ = Resource("swagger-ui-dist", func() {
+var _ = Resource("swagger-ui", func() {
 
-	//建立静态httpserver
-	Files("/swagger-ui-dist/*filepath", "swagger-ui-dist/")
+	Files("/swagger-ui/*filepath", "swagger-ui/")
 })

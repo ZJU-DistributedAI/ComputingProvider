@@ -1,0 +1,12 @@
+.idea/ComputingProvider.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+ComputingProvider
+.idea
+app
+client
+compose
+public
+generatePrivateKey/node_modules
+.DS_Store
