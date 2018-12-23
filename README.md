@@ -34,3 +34,7 @@ open browser, input
 `http://localhost:8899/swagger-ui/index.html`
 
 That is it. 
+
+## Usage
+add ETH private key;
+add hash
