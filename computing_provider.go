@@ -153,19 +153,6 @@ func setTransactionArgments() error {
 }
 
 func readConfig() *transaction.TransactionConfig {
-	// os.Setenv("TransactionConfig", )
-	// config := &transaction.TransactionConfig{
-	// 	Add_to_address:  "0af5013bb6f5c65d04abc69c9843697d708d3b5d",
-	// 	Add_data_prefix: "add ",
-
-	// 	Del_to_address:  "7aa5414d58026ed3e3d3d87c97698c33e3f1602d",
-	// 	Del_data_prefix: "del ",
-
-	// 	ETH_HOST:  "http://localhost:8545",
-	// 	Value:     "0",
-	// 	Gas_price: "200",
-	// 	Gas_limit: "300000",
-	// }
 
 	config := &transaction.TransactionConfig{
 		Add_to_address:  os.Getenv("Add_to_address"),

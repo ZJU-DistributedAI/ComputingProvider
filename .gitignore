@@ -10,3 +10,8 @@ compose
 public
 generatePrivateKey/node_modules
 .DS_Store
+tool
+main.go
+swagger-ui.go
+swagger.go
+swagger
