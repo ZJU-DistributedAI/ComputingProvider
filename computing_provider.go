@@ -68,7 +68,6 @@ func (c *ComputingProviderController) Agree(ctx *app.AgreeComputingProviderConte
 // Del runs the del action.
 func (c *ComputingProviderController) Del(ctx *app.DelComputingProviderContext) error {
 	// check arguments
-
 	if checkArguments(ctx.Hash, ctx.ETHKey) == false {
 		fmt.Println("ctx.Hash===========>", ctx.Hash)
 		return ctx.BadRequest(
@@ -77,7 +76,6 @@ func (c *ComputingProviderController) Del(ctx *app.DelComputingProviderContext) 
 
 	// read config
 	config := readConfig()
-
 	if config == nil {
 		fmt.Println("readConfig config===========>", config)
 		goa.LogInfo(context.Background(), "Config of computing provider error")
