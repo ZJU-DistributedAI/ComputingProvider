@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ZJU-DistributedAI/ComputingProvider/app"
-	"github.com/ZJU-DistributedAI/ComputingProvider/transaction"
+	"ComputingProvider/app"
 	"github.com/goadesign/goa"
+	"ComputingProvider/transaction"
 )
 
 var IPFS_API = os.Getenv("IPFS_API")
@@ -27,6 +27,8 @@ func NewComputingProviderController(service *goa.Service) *ComputingProviderCont
 	}
 	return &ComputingProviderController{Controller: service.NewController("ComputingProviderController")}
 }
+
+
 
 // Add runs the add action.
 func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) error {
@@ -202,4 +204,12 @@ func send2Ethereum(op transaction.OpType, computingAddressHash string) (string, 
 	// TODO send hash to ethereum
 
 	return "TODO", nil
+}
+
+
+// Train runs the train action.
+func (c *ComputingProviderController) Train(ctx *app.TrainComputingProviderContext) error {
+
+
+	return nil
 }
