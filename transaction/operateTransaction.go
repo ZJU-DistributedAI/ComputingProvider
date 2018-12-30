@@ -39,6 +39,8 @@ const (
 	ADD OpType = "add"
 	//DEL del
 	DEL OpType = "del"
+	// Agree agree
+	AGREE OpType = "agree"
 )
 
 // OperateTrasaction generate generate, sign, send transaction, return hash

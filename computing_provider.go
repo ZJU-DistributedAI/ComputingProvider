@@ -54,17 +54,28 @@ func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) 
 		return ctx.InternalServerError(
 			goa.ErrInternal("operateTrasaction failure"))
 	}
+	// save privatekey
+	os.Setenv("Agree_ETHKey", ctx.ETHKey)
 	return ctx.OK([]byte(transactionHash))
 }
 
 // Agree runs the agree action.
 func (c *ComputingProviderController) Agree(ctx *app.AgreeComputingProviderContext) error {
-	// ComputingProviderController_Agree: start_implement
+	// 获取判断swaggerUI上的参数参数；TODO同意并发送到以太坊
+	if checkAgreeArgments(ctx.ETHKey, ctx.ComputingHash, ctx.ContractHash, ctx.PublicKey) == false {
+		fmt.Println("ctx.Hash===========>", ctx)
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Agree action Invalid arguments!"))
+	}
 
-	// Put your logic here
-
-	return nil
-	// ComputingProviderController_Agree: end_implement
+	computingHashAdress := os.Getenv("Del_to_address")
+	agreeHash, err := send2Ethereum(transaction.AGREE, computingHashAdress)
+	if err != nil {
+		fmt.Println("send2Ethereum err===========>", err)
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Agree send2Ethereum error!"))
+	}
+	return ctx.OK([]byte(agreeHash))
 }
 
 // Del runs the del action.
@@ -106,6 +117,7 @@ func (c *ComputingProviderController) UploadRes(ctx *app.UploadResComputingProvi
 	// ComputingProviderController_UploadRes: end_implement
 }
 
+// ----- Add and Del methods start -----
 // check arguments
 func checkArguments(hash string, privateKey string) bool {
 	// easy check
@@ -168,4 +180,26 @@ func readConfig() *transaction.TransactionConfig {
 	}
 
 	return config
+}
+
+// ----- Agree methods start -----
+func checkAgreeArgments(agreeETHKey string, agreeComputingHash string, agreeContractHash string, agreePublicKey string) bool {
+	if len(agreeComputingHash) != 46 || len(agreeContractHash) != 46 || len(agreeETHKey) != 64 || len(agreePublicKey) != 64 {
+		fmt.Println("argments is not valid")
+		return false
+	}
+	// judge ETHKey
+	AgreeETHKey := os.Getenv("Agree_ETHKey")
+	if AgreeETHKey != agreeETHKey {
+		fmt.Println("ETHKey is not matching")
+		return false
+	}
+	return true
+}
+
+// send2Ethereum send agree to ethereum
+func send2Ethereum(op transaction.OpType, computingAddressHash string) (string, error) {
+	// TODO send hash to ethereum
+
+	return "TODO", nil
 }
