@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 
-	"ComputingProvider/app"
+	"github.com/ZJU-DistributedAI/ComputingProvider/app"
+	"github.com/ZJU-DistributedAI/ComputingProvider/transaction"
 	"github.com/goadesign/goa"
-	"ComputingProvider/transaction"
 )
 
 var IPFS_API = os.Getenv("IPFS_API")
@@ -27,8 +28,6 @@ func NewComputingProviderController(service *goa.Service) *ComputingProviderCont
 	}
 	return &ComputingProviderController{Controller: service.NewController("ComputingProviderController")}
 }
-
-
 
 // Add runs the add action.
 func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) error {
@@ -119,6 +118,25 @@ func (c *ComputingProviderController) UploadRes(ctx *app.UploadResComputingProvi
 	// ComputingProviderController_UploadRes: end_implement
 }
 
+// Train runs the train action.
+func (c *ComputingProviderController) Train(ctx *app.TrainComputingProviderContext) error {
+	// TODO 检查参数，本地训练[完成代码链接，执行训练]
+	if checkTrainArgments(ctx.ETHKey, ctx.ComputingHash, ctx.ContractHash, ctx.PublicKey) == false {
+		fmt.Println("ctx.Hash===========>", ctx)
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Train action Invalid arguments!"))
+	}
+
+	// training
+	path := "_test.sh"
+	if trainModelByPython(path) == false {
+		fmt.Println("trainModelByPython error")
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Train action trainModelByPython error!"))
+	}
+	return ctx.OK([]byte(os.Getenv("Del_to_address")))
+}
+
 // ----- Add and Del methods start -----
 // check arguments
 func checkArguments(hash string, privateKey string) bool {
@@ -166,6 +184,7 @@ func setTransactionArgments() error {
 	return nil
 }
 
+// readConfig
 func readConfig() *transaction.TransactionConfig {
 
 	config := &transaction.TransactionConfig{
@@ -199,17 +218,39 @@ func checkAgreeArgments(agreeETHKey string, agreeComputingHash string, agreeCont
 	return true
 }
 
-// send2Ethereum send agree to ethereum
+// TODO send2Ethereum send agree to ethereum
 func send2Ethereum(op transaction.OpType, computingAddressHash string) (string, error) {
-	// TODO send hash to ethereum
+	//send hash to ethereum
 
 	return "TODO", nil
 }
 
+// ----- Train methods start -----
+func checkTrainArgments(trainETHKey string, trainComputingHash string, trainContractHash string, trainPublicKey string) bool {
+	if len(trainComputingHash) != 46 || len(trainContractHash) != 46 || len(trainETHKey) != 64 || len(trainPublicKey) != 64 {
+		fmt.Println("argments is not valid")
+		return false
+	}
+	// judge ETHKey
+	AgreeETHKey := os.Getenv("Agree_ETHKey")
+	if AgreeETHKey != trainETHKey {
+		fmt.Println("ETHKey is not matching")
+		return false
+	}
+	return true
+}
 
-// Train runs the train action.
-func (c *ComputingProviderController) Train(ctx *app.TrainComputingProviderContext) error {
+//TODO trainModelByPython
+func trainModelByPython(commandFilePath string) bool {
+	// command := `./_test.sh`
+	command := "./" + commandFilePath + "`"
+	cmd := exec.Command("/bin/bash", "-c", command)
 
-
-	return nil
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("Execute Shell:%s failed with error:%s", command, err.Error())
+		return false
+	}
+	fmt.Printf("Execute Shell:%s finished with output:\n%s", command, string(output))
+	return true
 }
