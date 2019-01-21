@@ -4,6 +4,6 @@ echo "source"
 source /Users/liulifeng/targetDirectory/bin/activate
 echo "cd"
 cd /Users/liulifeng/Workspaces/DistributedAI/notebooks/Python/CNNwithFL
-echo "python CNNwithFL.py"
-python CNNwithFL.py
-echo "python CNNwithFL.py end"
+echo "python FulLConnect.py"
+python FulLConnect.py
+echo "python FulLConnect.py end"

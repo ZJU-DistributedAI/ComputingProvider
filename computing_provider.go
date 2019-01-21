@@ -49,7 +49,8 @@ func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) 
 	}
 
 	// operate transaction
-	transactionHash, err := transaction.OperateTransaction(transaction.DEL, ctx.Hash, ctx.ETHKey, config)
+	// TODO 上传  格式 2:运算资源描述hash:上传运算资源地址hash？
+	transactionHash, err := transaction.OperateTransaction(transaction.ADD, ctx.Hash, ctx.ETHKey, config)
 	if err != nil {
 		fmt.Println("err===========>", err)
 		return ctx.InternalServerError(
@@ -62,15 +63,26 @@ func (c *ComputingProviderController) Add(ctx *app.AddComputingProviderContext) 
 
 // Agree runs the agree action.
 func (c *ComputingProviderController) Agree(ctx *app.AgreeComputingProviderContext) error {
-	// 获取判断swaggerUI上的参数参数；TODO同意并发送到以太坊
+	// 获取判断swaggerUI上的参数参数；TODO同意并发送到以太坊 => 离线签名？
 	if checkAgreeArgments(ctx.ETHKey, ctx.ComputingHash, ctx.ContractHash, ctx.PublicKey) == false {
 		fmt.Println("ctx.Hash===========>", ctx)
 		return ctx.BadRequest(
 			goa.ErrBadRequest("Agree action Invalid arguments!"))
 	}
 
+	// read config
+	config := readConfig()
+	if config == nil {
+		fmt.Println("readConfig config===========>", config)
+		goa.LogInfo(context.Background(), "Config of computing provider error")
+		return ctx.InternalServerError(
+			goa.ErrInternal("Config of computing provider error"))
+	}
 	computingHashAdress := os.Getenv("Del_to_address")
-	agreeHash, err := send2Ethereum(transaction.AGREE, computingHashAdress)
+	// send2Ethereum TODO 内容的定义
+	// agreeHash, err := send2Ethereum(transaction.AGREE, computingHashAdress)
+	content := ctx.ComputingHash + ":" + ctx.ContractHash + ":" + ctx.PublicKey
+	agreeHash, err := transaction.OperateTransaction(transaction.AGREE, content, ctx.ETHKey, config)
 	if err != nil {
 		fmt.Println("send2Ethereum err===========>", err)
 		return ctx.BadRequest(
@@ -141,9 +153,10 @@ func (c *ComputingProviderController) Train(ctx *app.TrainComputingProviderConte
 // check arguments
 func checkArguments(hash string, privateKey string) bool {
 	// easy check
-	if len(hash) != 46 || len(privateKey) != 64 {
-		return false
-	}
+	// if len(hash) != 46 || len(privateKey) != 64 {
+	// 	return false
+	// }
+
 	return true
 }
 
@@ -205,10 +218,11 @@ func readConfig() *transaction.TransactionConfig {
 
 // ----- Agree methods start -----
 func checkAgreeArgments(agreeETHKey string, agreeComputingHash string, agreeContractHash string, agreePublicKey string) bool {
-	if len(agreeComputingHash) != 46 || len(agreeContractHash) != 46 || len(agreeETHKey) != 64 || len(agreePublicKey) != 64 {
-		fmt.Println("argments is not valid")
-		return false
-	}
+	// if len(agreeComputingHash) != 46 || len(agreeContractHash) != 46 || len(agreeETHKey) != 64 || len(agreePublicKey) != 64 {
+	// 	fmt.Println("argments is not valid")
+	// 	return false
+	// }
+
 	// judge ETHKey
 	AgreeETHKey := os.Getenv("Agree_ETHKey")
 	if AgreeETHKey != agreeETHKey {
@@ -227,10 +241,10 @@ func send2Ethereum(op transaction.OpType, computingAddressHash string) (string, 
 
 // ----- Train methods start -----
 func checkTrainArgments(trainETHKey string, trainComputingHash string, trainContractHash string, trainPublicKey string) bool {
-	if len(trainComputingHash) != 46 || len(trainContractHash) != 46 || len(trainETHKey) != 64 || len(trainPublicKey) != 64 {
-		fmt.Println("argments is not valid")
-		return false
-	}
+	// if len(trainComputingHash) != 46 || len(trainContractHash) != 46 || len(trainETHKey) != 64 || len(trainPublicKey) != 64 {
+	// 	fmt.Println("argments is not valid")
+	// 	return false
+	// }
 	// judge ETHKey
 	AgreeETHKey := os.Getenv("Agree_ETHKey")
 	if AgreeETHKey != trainETHKey {

@@ -43,7 +43,7 @@ const (
 	AGREE OpType = "agree"
 )
 
-// OperateTrasaction generate generate, sign, send transaction, return hash
+// OperateTransaction generate, sign, send transaction, parameter: 操作对象，传输内容，以太坊私钥, config; return hash
 func OperateTransaction(op OpType, hash string, privateKey string, config *TransactionConfig) (string, error) {
 	// generate transaction
 	tx, err := generateTransaction(op, hash, privateKey, config)
@@ -78,9 +78,21 @@ func generateTransaction(op OpType, hash string, privateKeyStr string, config *T
 	// data
 	to := config.Add_to_address
 	data := config.Add_data_prefix + hash
-	if op != "add" {
+	// if op != "add" {
+	// 	to = config.Del_to_address
+	// 	data = config.Del_data_prefix + hash
+	// }
+	if op == ADD {
+		to = config.Add_to_address
+		data = config.Add_data_prefix + hash
+	}
+	if op == AGREE {
 		to = config.Del_to_address
-		data = config.Del_data_prefix + hash
+		data = "agree " + hash
+	}
+	if op == DEL {
+		to = config.Del_to_address
+		data = config.Add_data_prefix + hash
 	}
 	fmt.Println(data)
 
