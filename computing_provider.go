@@ -78,7 +78,8 @@ func (c *ComputingProviderController) Agree(ctx *app.AgreeComputingProviderConte
 		return ctx.InternalServerError(
 			goa.ErrInternal("Config of computing provider error"))
 	}
-	computingHashAdress := os.Getenv("Del_to_address")
+
+	// computingHashAdress := os.Getenv("Del_to_address")
 	// send2Ethereum TODO 内容的定义
 	// agreeHash, err := send2Ethereum(transaction.AGREE, computingHashAdress)
 	content := ctx.ComputingHash + ":" + ctx.ContractHash + ":" + ctx.PublicKey
@@ -122,12 +123,30 @@ func (c *ComputingProviderController) Del(ctx *app.DelComputingProviderContext) 
 
 // UploadRes runs the uploadRes action.
 func (c *ComputingProviderController) UploadRes(ctx *app.UploadResComputingProviderContext) error {
-	// ComputingProviderController_UploadRes: start_implement
-
-	// Put your logic here
-
-	return nil
-	// ComputingProviderController_UploadRes: end_implement
+	// check arguments
+	if checkArguments(ctx.AesHash, ctx.ETHKey) == false {
+		fmt.Println("ctx.Hash===========>", ctx.AesHash)
+		return ctx.BadRequest(
+			goa.ErrBadRequest("Invalid arguments!"))
+	}
+	// read config
+	config := readConfig()
+	if config == nil {
+		fmt.Println("readConfig config===========>", config)
+		goa.LogInfo(context.Background(), "Config of computing provider error")
+		return ctx.InternalServerError(
+			goa.ErrInternal("Config of computing provider error"))
+	}
+	// operate transaction
+	// transactionHash, err := operateTrasaction(DEL, ctx.Hash, ctx.PrivateKey, config)
+	content := ctx.AesHash + ":" + ctx.ResHash
+	uploadHash, err := transaction.OperateTransaction(transaction.AGREE, content, ctx.ETHKey, config)
+	if err != nil {
+		fmt.Println("send2Ethereum err===========>", err)
+		return ctx.BadRequest(
+			goa.ErrBadRequest("upload result error!"))
+	}
+	return ctx.OK([]byte(uploadHash))
 }
 
 // Train runs the train action.

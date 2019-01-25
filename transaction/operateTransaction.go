@@ -39,8 +39,10 @@ const (
 	ADD OpType = "add"
 	//DEL del
 	DEL OpType = "del"
-	// Agree agree
+	// AGREE agree
 	AGREE OpType = "agree"
+	// UPLOAD upload
+	UPLOAD OpType = "upload"
 )
 
 // OperateTransaction generate, sign, send transaction, parameter: 操作对象，传输内容，以太坊私钥, config; return hash
@@ -92,7 +94,11 @@ func generateTransaction(op OpType, hash string, privateKeyStr string, config *T
 	}
 	if op == DEL {
 		to = config.Del_to_address
-		data = config.Add_data_prefix + hash
+		data = config.Del_data_prefix + hash
+	}
+	if op == UPLOAD {
+		to = config.Del_to_address
+		data = "upload " + hash
 	}
 	fmt.Println(data)
 
