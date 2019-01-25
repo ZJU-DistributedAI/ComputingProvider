@@ -179,13 +179,13 @@ func checkArguments(hash string, privateKey string) bool {
 	return true
 }
 
-// set transaction argments
+// set transaction argments  c 代表 computing provider； m -> model;  d->data
 func setTransactionArgments() error {
 	err := os.Setenv("Add_to_address", "0af5013bb6f5c65d04abc69c9843697d708d3b5d")
 	if err != nil {
 		return err
 	}
-	err = os.Setenv("Add_data_prefix", "add ")
+	err = os.Setenv("Add_data_prefix", "cadd ")
 	if err != nil {
 		return err
 	}
@@ -193,7 +193,15 @@ func setTransactionArgments() error {
 	if err != nil {
 		return err
 	}
-	err = os.Setenv("Del_data_prefix", "del ")
+	err = os.Setenv("Del_data_prefix", "cdel ")
+	if err != nil {
+		return err
+	}
+	err = os.Setenv("Agree_data_prefix", "cagree ")
+	if err != nil {
+		return err
+	}
+	err = os.Setenv("Upload_data_prefix", "cupload ")
 	if err != nil {
 		return err
 	}
@@ -225,6 +233,9 @@ func readConfig() *transaction.TransactionConfig {
 
 		Del_to_address:  os.Getenv("Del_to_address"),
 		Del_data_prefix: os.Getenv("Del_data_prefix"),
+
+		Agree_data_prefix:  os.Getenv("Agree_data_prefix"),
+		Upload_data_prefix: os.Getenv("Upload_data_prefix"),
 
 		ETH_HOST:  os.Getenv("ETH_HOST"),
 		Value:     os.Getenv("Value"),

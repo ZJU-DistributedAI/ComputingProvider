@@ -24,6 +24,12 @@ type TransactionConfig struct {
 	Del_to_address  string
 	Del_data_prefix string
 
+	// Agree info
+	Agree_data_prefix string
+
+	// upload info
+	Upload_data_prefix string
+
 	// public info
 	ETH_HOST  string
 	Value     string
@@ -90,7 +96,8 @@ func generateTransaction(op OpType, hash string, privateKeyStr string, config *T
 	}
 	if op == AGREE {
 		to = config.Del_to_address
-		data = "agree " + hash
+		// data = "cagree " + hash
+		data = config.Agree_data_prefix + hash
 	}
 	if op == DEL {
 		to = config.Del_to_address
@@ -98,7 +105,8 @@ func generateTransaction(op OpType, hash string, privateKeyStr string, config *T
 	}
 	if op == UPLOAD {
 		to = config.Del_to_address
-		data = "upload " + hash
+		// data = "cupload " + hash
+		data = config.Upload_data_prefix + hash
 	}
 	fmt.Println(data)
 

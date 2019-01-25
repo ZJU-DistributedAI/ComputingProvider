@@ -38,3 +38,11 @@ That is it.
 ## Usage
 add ETH private key;
 add hash
+
+## 发送的内容的定义
+每一个离线签名的交易内容都是有前缀的，如 model方的add接口的中的前缀 前缀为 madd; 整体内容是 madd+"其他字符串"； 同理 计算方c是 cadd; 数据方d是 dadd等。
+
+- Add 接口  交易内容: cadd + ctx.Hash
+- Agree 接口  交易内容: cagree + ctx.ComputingHash + ":" + ctx.ContractHash + ":" + ctx.PublicKey
+- Del 接口  交易内容: cdel + Hash
+- UploadRes 接口  交易内容: cupload + ctx.AesHash + ":" + ctx.ResHash
